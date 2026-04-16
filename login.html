@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In – Smart Campus</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    body {
+      min-height: 100vh; background: #F9FAFB;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; font-family: 'Inter', sans-serif;
+    }
+    .login-container { width: 100%; max-width: 420px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .login-logo {
+      width: 56px; height: 56px; background: var(--primary); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+      font-size: 24px; color: white; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+    }
+    .login-title { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+    .login-sub { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+
+    .login-card {
+      background: white; border: 1px solid var(--border); border-radius: 20px;
+      padding: 40px; box-shadow: var(--shadow-md);
+    }
+    .login-btn { width: 100%; padding: 12px; margin-top: 12px; }
+    
+    .demo-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; }
+    .demo-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .demo-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .role-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 99px;
+      font-size: 12px; font-weight: 600; background: var(--bg); color: var(--text-muted);
+      border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+    }
+    .role-badge:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+    .role-badge i { font-size: 11px; }
+
+    #email-error, #password-error, #role-error { font-size: 12px; color: var(--critical); margin-top: 6px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo"><i class="fas fa-building-circle-check"></i></div>
+      <div class="login-title">Smart Campus</div>
+      <div class="login-sub">Maintenance and Issue Tracking Portal</div>
+    </div>
+
+    <div class="login-card">
+      <div class="form-group">
+        <label class="form-label">Campus Email</label>
+        <div class="input-wrap">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" class="form-control" placeholder="name@campus.edu" />
+        </div>
+        <div id="email-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" />
+        </div>
+        <div id="password-error"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Access Role</label>
+        <div class="input-wrap">
+          <i class="fas fa-user-shield"></i>
+          <select id="role" class="form-control">
+            <option value="">Select Role</option>
+            <option value="user">Student / Researcher</option>
+            <option value="admin">Campus Administrator</option>
+            <option value="staff">Maintenance Staff</option>
+          </select>
+        </div>
+        <div id="role-error"></div>
+      </div>
+
+      <button class="btn btn-primary login-btn" id="login-btn" onclick="login()">Sign In to Dashboard</button>
+
+      <div class="demo-section">
+        <div class="demo-label">Quick Demo Access</div>
+        <div class="demo-badges">
+          <span class="role-badge" onclick="fillDemo('user')"><i class="fas fa-user"></i> Student</span>
+          <span class="role-badge" onclick="fillDemo('admin')"><i class="fas fa-shield"></i> Admin</span>
+          <span class="role-badge" onclick="fillDemo('rajesh')"><i class="fas fa-screwdriver-wrench"></i> Rajesh</span>
+          <span class="role-badge" onclick="fillDemo('priya')"><i class="fas fa-faucet"></i> Priya</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function fillDemo(role) {
+      const demos = {
+        user:   { email: 'student@campus.edu', pass: 'user123',  role: 'user' },
+        admin:  { email: 'admin@campus.edu',   pass: 'admin123', role: 'admin' },
+        rajesh: { email: 'rajesh@campus.edu',  pass: 'staff123', role: 'staff' },
+        priya:  { email: 'priya@campus.edu',   pass: 'staff123', role: 'staff' }
+      };
+      const d = demos[role];
+      document.getElementById('email').value = d.email;
+      document.getElementById('password').value = d.pass;
+      document.getElementById('role').value = d.role;
+      hideErrors();
+    }
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      if(el) { el.style.display = 'block'; el.textContent = msg; }
+    }
+    function hideErrors() {
+      document.querySelectorAll('[id$="-error"]').forEach(e => e.style.display = 'none');
+    }
+  </script>
+</body>
+</html>

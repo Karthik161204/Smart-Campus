@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – Smart Campus</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .table-container { background:white; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .action-btn { width:32px; height:32px; border-radius:6px; border:1px solid var(--border); display:inline-flex; align-items:center; justify-content:center; color:var(--text-muted); cursor:pointer; transition:all 0.2s; background:white; }
+    .action-btn:hover { color:var(--primary); border-color:var(--primary); background:var(--primary-light); }
+    .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:8px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR (CONSISTENT) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-building-shield"></i></div>
+      <div class="brand-name">Smart Campus</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item active" href="/admin"><i class="fas fa-gauge-high"></i> Console</a>
+      
+      <div class="nav-label">Workflow</div>
+      <a class="nav-item" href="#issues-section"><i class="fas fa-list-check"></i> Master Records</a>
+      
+      <div class="nav-label">Insights</div>
+      <a class="nav-item" href="#"><i class="fas fa-chart-pie"></i> System Analytics</a>
+
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="#" onclick="toggleNotif()"><i class="fas fa-bell"></i> Notifications <span class="nav-badge">4</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" style="background:var(--critical-bg); color:var(--critical)">AD</div>
+        <div>
+          <div class="user-name">Administrator</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Admin Console <span class="topbar-subtitle">Full visibility and control over campus maintenance operations.</span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search by ID, staff, or location..." id="admin-search">
+        </div>
+        <div class="notif-btn" onclick="toggleNotif()"><i class="fas fa-bell"></i><span class="notif-dot"></span></div>
+        <button class="btn btn-ghost" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- QUICK STATS (DYNAMIC) -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">Total Reports</div>
+            <div class="stat-value" id="stat-total">0</div>
+          </div>
+          <div class="stat-icon blue"><i class="fas fa-ticket"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">Pending / Active</div>
+            <div class="stat-value" id="stat-pending">0</div>
+          </div>
+          <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">Successfully Resolved</div>
+            <div class="stat-value" id="stat-resolved">0</div>
+          </div>
+          <div class="stat-icon green"><i class="fas fa-check-double"></i></div>
+        </div>
+      </div>
+
+      <!-- MASTER TABLE -->
+      <section id="issues-section">
+        <div class="section-header" style="margin-bottom: 20px;">
+          <div><div class="section-title">Master Maintenance Log</div></div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline btn-sm" onclick="refreshData()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Issue ID</th>
+                <th>Details</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="issues-table">
+              <!-- JS rendered -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal" style="width: 440px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-user-plus" style="color:var(--primary)"></i> Assign Staff</div>
+      <button class="close-btn" onclick="closeModal('assign-modal')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="assign-issue-info" style="margin-bottom:16px; font-weight:600;"></div>
+      <div class="form-group">
+        <label class="form-label">Available Specialized Staff</label>
+        <select id="assign-staff-select" class="form-control"></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('assign-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAssign()">Apply Assignment</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  let currentAssignId = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = requireAuth('admin');
+    if (!user) return;
+    await refreshData();
+  });
+
+  async function refreshData() {
+    const issues = await getIssues();
+    const stats = await getStats();
+    
+    if (stats) {
+      document.getElementById('stat-total').textContent = stats.total;
+      document.getElementById('stat-pending').textContent = stats.pending;
+      document.getElementById('stat-resolved').textContent = stats.resolved;
+    }
+
+    if (issues) renderIssuesTable(issues);
+  }
+
+  function renderIssuesTable(issues) {
+    const tbody = document.getElementById('issues-table');
+    if(!issues.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No reports found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = issues.map(issue => `
+      <tr>
+        <td style="font-family:'JetBrains Mono'; font-weight:700; color:var(--primary);">${issue.id}</td>
+        <td>
+          <div style="font-weight:600; color:var(--text);">${issue.title}</div>
+          <div style="font-size:12px; color:var(--text-muted);"><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>${issue.location}</div>
+        </td>
+        <td><span class="badge badge-${issue.priority.toLowerCase()}">${issue.priority}</span></td>
+        <td><span class="badge badge-${issue.status.toLowerCase().replace(/\s+/g,'')}">${issue.status}</span></td>
+        <td>
+          ${issue.assignedTo ? `
+            <div style="display:flex; align-items:center; gap:8px;">
+               <div style="width:24px; height:24px; border-radius:50%; background:var(--primary-light); color:var(--primary); font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">${issue.assignedTo.substring(0,1)}</div>
+               <span style="font-size:13px; font-weight:500;">${issue.assignedTo}</span>
+            </div>
+          ` : '<span style="color:var(--text-muted); font-size:12px; font-style:italic;">Pending Assignment</span>'}
+        </td>
+        <td>
+          <div style="display:flex; gap:8px;">
+            <button class="action-btn" title="Assign" onclick="openAssignModal('${issue.id}')"><i class="fas fa-user-plus"></i></button>
+            <button class="action-btn" title="Performance Detail" onclick="showAlert('info', 'Analysis coming soon')"><i class="fas fa-chart-line"></i></button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openAssignModal(id) {
+    currentAssignId = id;
+    const sel = document.getElementById('assign-staff-select');
+    sel.innerHTML = '<option value="">Choose specialized staff...</option>' + 
+      MOCK_STAFF.map(s => `<option value="${s.name}">${s.name} (${s.specialty})</option>`).join('');
+    document.getElementById('assign-modal').classList.add('open');
+  }
+
+  async function confirmAssign() {
+    const staff = document.getElementById('assign-staff-select').value;
+    if (!staff) return;
+    await updateIssue(currentAssignId, { assignedTo: staff, status: 'Assigned' });
+    closeModal('assign-modal');
+    await refreshData();
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function toggleNotif() { showAlert('info', 'Notifications center coming soon'); }
+</script>
+</body>
+</html>

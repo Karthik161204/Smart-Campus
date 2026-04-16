@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Campus – Modern Issue Tracking</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .hero {
+      height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; background: radial-gradient(circle at 50% 50%, #EFF6FF 0%, #FFFFFF 100%);
+      padding: 0 20px;
+    }
+    .hero-tag {
+      padding: 6px 16px; background: var(--primary-light); color: var(--primary);
+      border-radius: 99px; font-size: 13px; font-weight: 700; margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease;
+    }
+    .hero-title {
+      font-size: 64px; font-weight: 800; color: var(--text); letter-spacing: -0.04em;
+      line-height: 1.1; margin-bottom: 24px; animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-title span { color: var(--primary); }
+    .hero-desc {
+      font-size: 20px; color: var(--text-muted); max-width: 600px; margin-bottom: 40px;
+      line-height: 1.6; animation: fadeInUp 1s ease 0.2s both;
+    }
+    .hero-actions { display: flex; gap: 16px; animation: fadeInUp 1s ease 0.4s both; }
+
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+      max-width: 1100px; margin: 0 auto; padding: 100px 20px;
+    }
+    .feature-card {
+      text-align: center; padding: 32px; border: 1px solid var(--border);
+      border-radius: 24px; background: white; transition: all 0.3s ease;
+    }
+    .feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .f-icon {
+      width: 64px; height: 64px; background: var(--bg); color: var(--primary);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 auto 24px;
+    }
+    .f-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    .f-desc { font-size: 14px; color: var(--text-muted); }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <header class="topbar" style="border:none; background:transparent;">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-building-circle-check"></i></div>
+      <div class="brand-name">Smart Campus</div>
+    </div>
+    <div class="topbar-actions">
+      <a href="login.html" class="btn btn-ghost">Sign In</a>
+      <a href="login.html" class="btn btn-primary">Get Started</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-tag">NEXT GENERATION FACILITY MANAGEMENT</div>
+    <h1 class="hero-title">Empower Your Campus <span>Infrastructure.</span></h1>
+    <p class="hero-desc">
+      A unified, real-time issue tracking platform designed for elite universities. 
+      Manage maintenance, security, and facilities with SaaS-grade precision.
+    </p>
+    <div class="hero-actions">
+      <a href="login.html" class="btn btn-primary" style="padding: 16px 32px; font-size: 15px;">Launch Dashboard</a>
+      <button class="btn btn-outline" style="padding: 16px 32px; font-size: 15px;">View Demo Case</button>
+    </div>
+  </section>
+
+  <section class="feature-grid">
+    <div class="feature-card">
+      <div class="f-icon"><i class="fas fa-bolt"></i></div>
+      <div class="f-title">Rapid Reporting</div>
+      <div class="f-desc">Snap a photo and report issues in seconds. Smart priority detection handles the rest.</div>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon"><i class="fas fa-route"></i></div>
+      <div class="f-title">Intelligent Routing</div>
+      <div class="f-desc">Issues are automatically routed to the right specialized maintenance staff instantly.</div>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon"><i class="fas fa-chart-bar"></i></div>
+      <div class="f-title">Full Visibility</div>
+      <div class="f-desc">Admins get a 360-degree view of campus health with real-time analytics and heatmaps.</div>
+    </div>
+  </section>
+
+  <footer style="padding: 60px 20px; border-top: 1px solid var(--border); text-align: center; background: white;">
+    <div class="sidebar-brand" style="justify-content: center; margin-bottom: 20px;">
+      <div class="brand-icon"><i class="fas fa-building-shield"></i></div>
+      <div class="brand-name">Smart Campus</div>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted);">© 2026 Smart Campus Facility Management. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

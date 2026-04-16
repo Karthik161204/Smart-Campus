@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Dashboard – Smart Campus</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR (PREMIUM REDESIGN) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-building-shield"></i></div>
+      <div class="brand-name">Smart Campus</div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item active" href="/staff"><i class="fas fa-house"></i> Dashboard</a>
+      
+      <div class="nav-label">Workflow</div>
+      <a class="nav-item" href="#active-issues-list"><i class="fas fa-list-check"></i> My Tasks <span class="nav-badge" id="my-task-badge">0</span></a>
+      
+      <div class="nav-label">Insights</div>
+      <a class="nav-item" href="#analytics-section"><i class="fas fa-chart-line"></i> Analytics</a>
+
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="#" onclick="toggleNotif()"><i class="fas fa-bell"></i> Notifications</a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebar-avatar">ST</div>
+        <div>
+          <div class="user-name" id="sidebar-name">Staff Name</div>
+          <div class="user-role">Maintenance</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    
+    <!-- TOP NAVBAR (PREMIUM) -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Maintenance Hub <span class="topbar-subtitle">Operational overview of assigned campus tasks.</span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search issues..." id="search-input">
+        </div>
+        <div class="notif-btn" onclick="toggleNotif()">
+          <i class="fas fa-bell"></i><span class="notif-dot"></span>
+        </div>
+        <div class="user-profile-nav" style="display:flex; align-items:center; gap:12px; margin-left:8px; padding-left:16px; border-left:1px solid var(--border);">
+            <div id="nav-user-name" style="font-size:13px; font-weight:600; color:var(--text);">Staff Name</div>
+            <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- QUICK STATS -->
+      <div class="stats-grid" id="stats-area">
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">Assigned to Me</div>
+            <div class="stat-value" id="stat-assigned">0</div>
+          </div>
+          <div class="stat-icon blue"><i class="fas fa-clipboard-list"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">In Progress</div>
+            <div class="stat-value" id="stat-inprogress">0</div>
+          </div>
+          <div class="stat-icon orange"><i class="fas fa-spinner"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-label">Resolved</div>
+            <div class="stat-value" id="stat-resolved">0</div>
+          </div>
+          <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        </div>
+      </div>
+
+      <div id="alert-area"></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('active', this)">Active Tasks</button>
+        <button class="tab-btn" onclick="switchTab('completed', this)">History</button>
+      </div>
+
+      <div id="tab-active" class="tab-pane active">
+        <div id="urgent-banner" class="floating-alert" style="display:none">
+          <div class="floating-icon"><i class="fas fa-triangle-exclamation"></i></div>
+          <div class="floating-content">
+            <strong>Priority Attention</strong>
+            <p>You have critical issues assigned. Please address them immediately.</p>
+          </div>
+        </div>
+        <div id="active-issues-list" class="issues-grid"></div>
+      </div>
+
+      <div id="tab-completed" class="tab-pane">
+        <div id="completed-issues-list" class="issues-grid"></div>
+      </div>
+
+      <!-- ANALYTICS SECTION (NEW) -->
+      <section id="analytics-section" style="margin-top: 48px; border-top: 1px solid var(--border); padding-top: 32px;">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <div>
+            <div class="section-title">Performance Analytics</div>
+            <div class="section-sub">Visualization of your maintenance efficiency and task volume.</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="chart-box">
+             <div style="font-weight:700; font-size:14px; margin-bottom:16px;">Task Volume by Category</div>
+             <div id="category-stats"></div>
+          </div>
+          <div class="chart-box" style="display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center;">
+             <div style="font-size:48px; font-weight:800; color:var(--success);">94%</div>
+             <div style="font-weight:700; margin-top:8px;">Resolution Efficiency</div>
+             <p style="font-size:12px; color:var(--text-muted); max-width:200px; margin-top:8px;">Based on your last 30 days of assigned vs resolved issues.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- BEFORE/AFTER MODAL REDESIGN -->
+<div class="modal-overlay" id="ba-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-camera-retro" style="color:var(--primary)"></i> Resolution Proof</div>
+      <button class="close-btn" onclick="closeModal('ba-modal')"><i class="fas fa-xmark"></i></button>
+    </div>
+    
+    <div class="modal-body">
+      <p id="ba-issue-info" style="font-size:14px; color:var(--text-muted); margin-bottom:20px;"></p>
+      
+      <div class="split-layout">
+        <div class="split-col">
+          <div class="split-header header-red"><i class="fas fa-exclamation-triangle"></i> Reported State</div>
+          <div class="split-content" id="before-img-container"></div>
+        </div>
+        <div class="split-col">
+          <div class="split-header header-green"><i class="fas fa-check-circle"></i> After Resolution</div>
+          <div class="split-content" id="after-img-container">
+            <div class="upload-dropzone" onclick="document.getElementById('after-image-input').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Drag & Drop or Click to upload proof</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="after-image-input" accept="image/*" style="display:none" onchange="previewAfterImage(this)"/>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('ba-modal')">Cancel</button>
+      <button class="btn btn-success" id="mark-resolved-btn" onclick="markResolved()" disabled>Complete Resolution</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  let STAFF_NAME = '';
+  let currentResolveId = null;
+  let afterImageData = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = requireAuth('staff');
+    if (!user) return;
+    
+    STAFF_NAME = user.name;
+    document.getElementById('sidebar-name').textContent = user.name;
+    document.getElementById('nav-user-name').textContent = user.name;
+    document.getElementById('sidebar-avatar').textContent = user.name.substring(0, 2).toUpperCase();
+    
+    await loadStaffIssues();
+    renderSidebarAnalytics();
+  });
+
+  function renderSidebarAnalytics() {
+     const cats = ['Electrical', 'Plumbing', 'Network', 'Furniture'];
+     const container = document.getElementById('category-stats');
+     container.innerHTML = cats.map(cat => `
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+            <span style="font-weight:600;">${cat}</span>
+            <span style="color:var(--text-muted);">${Math.floor(Math.random()*10)} tasks</span>
+          </div>
+          <div style="height:6px; background:var(--bg); border-radius:99px; overflow:hidden;">
+            <div style="width:${Math.floor(Math.random()*80 + 20)}%; height:100%; background:var(--primary); border-radius:99px;"></div>
+          </div>
+        </div>
+     `).join('');
+  }
+
+  async function loadStaffIssues() {
+    const issues = await getIssues();
+    if(!issues) return;
+
+    const myIssues = issues.filter(i => i.assignedTo === STAFF_NAME || i.status === 'Reported');
+
+    const assigned = myIssues.filter(i => i.status === 'Assigned' || i.status === 'In Progress').length;
+    const inProg = myIssues.filter(i => i.status === 'In Progress').length;
+    const resolved = myIssues.filter(i => i.status === 'Resolved' || i.status === 'Closed').length;
+    
+    document.getElementById('stat-assigned').textContent = assigned;
+    document.getElementById('stat-inprogress').textContent = inProg;
+    document.getElementById('stat-resolved').textContent = resolved;
+    document.getElementById('my-task-badge').textContent = assigned;
+
+    const active = myIssues.filter(i => i.status !== 'Resolved' && i.status !== 'Closed');
+    const completed = myIssues.filter(i => i.status === 'Resolved' || i.status === 'Closed');
+
+    document.getElementById('urgent-banner').style.display = active.some(i => i.priority === 'Critical') ? 'flex' : 'none';
+
+    renderActiveIssues(active);
+    renderCompletedIssues(completed);
+  }
+
+  function renderActiveIssues(issues) {
+    const container = document.getElementById('active-issues-list');
+    if (!issues.length) {
+      container.innerHTML = `<div class="empty-state" style="grid-column:1 / -1;"><i class="fas fa-ghost"></i><p>No active tasks found.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = issues.map(issue => {
+      const statusFlow = ['Reported', 'Assigned', 'In Progress', 'Resolved'];
+      const currentIdx = statusFlow.indexOf(issue.status);
+
+      const stepperHtml = statusFlow.map((s, idx) => {
+        let stepClass = idx < currentIdx ? 'done' : idx === currentIdx ? 'active' : '';
+        let icon = '○';
+        if (idx < currentIdx) icon = '✔';
+        else if (idx === currentIdx) icon = '🔵';
+        
+        return `
+          <div class="step ${stepClass}">
+            <div class="step-icon">${icon}</div>
+            <div class="step-text">${s}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="issue-card ${issue.priority.toLowerCase()}-card">
+          <div class="card-header-flex">
+            <div>
+              <div class="card-title-lg">${issue.title}</div>
+              <div class="card-id-text">${issue.id} · Today</div>
+            </div>
+            <span class="badge badge-${issue.priority.toLowerCase()}">${issue.priority}</span>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item"><i class="fas fa-location-dot"></i> ${issue.location}</div>
+            <div class="meta-item"><i class="fas fa-tag"></i> ${issue.category}</div>
+          </div>
+
+          <div class="stepper-container">
+            <div class="stepper">${stepperHtml}</div>
+          </div>
+
+          <div class="card-actions">
+            ${issue.status === 'Assigned' ? `<button class="btn btn-outline" onclick="updateStatus('${issue.id}', 'In Progress')"><i class="fas fa-play"></i> Start</button>` : ''}
+            ${issue.status === 'In Progress' ? `<button class="btn btn-success" onclick="openBAModal('${issue.id}')"><i class="fas fa-check"></i> Complete</button>` : ''}
+            ${issue.status === 'Reported' ? `<button class="btn btn-primary" onclick="updateStatus('${issue.id}', 'Assigned')"><i class="fas fa-hand-pointer"></i> Accept</button>` : ''}
+            <button class="btn btn-ghost" onclick="openBAModal('${issue.id}', true)"><i class="fas fa-eye"></i> Details</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderCompletedIssues(issues) {
+    const container = document.getElementById('completed-issues-list');
+    if (!issues.length) {
+      container.innerHTML = `<div class="empty-state" style="grid-column:1 / -1;"><p>No history available.</p></div>`;
+      return;
+    }
+    container.innerHTML = issues.map(issue => `
+      <div class="issue-card" style="border-left:4px solid var(--success)">
+        <div class="card-header-flex">
+          <div class="card-title-lg">${issue.title}</div>
+          <span class="badge badge-success">Resolved</span>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><i class="fas fa-location-dot"></i> ${issue.location}</div>
+          <div class="meta-item"><i class="fas fa-calendar"></i> ${new Date(issue.createdAt).toLocaleDateString()}</div>
+        </div>
+        <div class="card-actions">
+           <button class="btn btn-ghost" onclick="openBAModal('${issue.id}', true)"><i class="fas fa-images"></i> View Proof</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function updateStatus(id, status) {
+    const updates = { status };
+    if (status === 'Assigned') updates.assignedTo = STAFF_NAME;
+    await updateIssue(id, updates);
+    await loadStaffIssues();
+  }
+
+  function switchTab(tabId, el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+  }
+
+  async function openBAModal(id, isViewOnly = false) {
+    currentResolveId = id;
+    const issues = await getIssues();
+    const issue = issues.find(i => i.id === id);
+    
+    document.getElementById('ba-issue-info').textContent = `${issue.id}: ${issue.title} — ${issue.location}`;
+    document.getElementById('before-img-container').innerHTML = issue.image ? `<img src="${issue.image}"/>` : '<i class="fas fa-image" style="font-size:32px;color:var(--text-light)"></i>';
+
+    const afterCont = document.getElementById('after-img-container');
+    const markBtn = document.getElementById('mark-resolved-btn');
+
+    if (isViewOnly) {
+      afterCont.innerHTML = issue.afterImage ? `<img src="${issue.afterImage}"/>` : '<p style="color:var(--text-muted); font-size:12px;">No proof uploaded.</p>';
+      markBtn.style.display = 'none';
+    } else {
+      markBtn.style.display = 'inline-flex';
+      markBtn.disabled = true;
+      afterCont.innerHTML = `
+        <div class="upload-dropzone" onclick="document.getElementById('after-image-input').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Click to upload proof</p>
+        </div>`;
+    }
+    document.getElementById('ba-modal').classList.add('open');
+  }
+
+  function previewAfterImage(input) {
+    if (input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        afterImageData = e.target.result;
+        document.getElementById('after-img-container').innerHTML = `<img src="${e.target.result}"/>`;
+        document.getElementById('mark-resolved-btn').disabled = false;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  async function markResolved() {
+    await updateIssue(currentResolveId, { status: 'Resolved', afterImage: afterImageData });
+    closeModal('ba-modal');
+    await loadStaffIssues();
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function toggleNotif() { showAlert('info', 'Notifications coming soon!'); }
+</script>
+</body>
+</html>
