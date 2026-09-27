@@ -173,15 +173,15 @@
     }
 
     tbody.innerHTML = issues.map(issue => `
-      <tr>
-        <td style="font-family:'JetBrains Mono'; font-weight:700; color:var(--primary);">${issue.id}</td>
-        <td>
+      <tr class="issue-row">
+        <td data-label="Issue ID" style="font-family:'JetBrains Mono'; font-weight:700; color:var(--primary);">${issue.id}</td>
+        <td data-label="Details">
           <div style="font-weight:600; color:var(--text);">${issue.title}</div>
           <div style="font-size:12px; color:var(--text-muted);"><i class="fas fa-map-marker-alt" style="margin-right:4px;"></i>${issue.location}</div>
         </td>
-        <td><span class="badge badge-${issue.priority.toLowerCase()}">${issue.priority}</span></td>
-        <td><span class="badge badge-${issue.status.toLowerCase().replace(/\s+/g,'')}">${issue.status}</span></td>
-        <td>
+        <td data-label="Priority"><span class="badge badge-${issue.priority.toLowerCase()}">${issue.priority}</span></td>
+        <td data-label="Status"><span class="badge badge-${issue.status.toLowerCase().replace(/\s+/g,'')}">${issue.status}</span></td>
+        <td data-label="Assigned To">
           ${issue.assignedTo ? `
             <div style="display:flex; align-items:center; gap:8px;">
                <div style="width:24px; height:24px; border-radius:50%; background:var(--primary-light); color:var(--primary); font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">${issue.assignedTo.substring(0,1)}</div>
@@ -189,7 +189,7 @@
             </div>
           ` : '<span style="color:var(--text-muted); font-size:12px; font-style:italic;">Pending Assignment</span>'}
         </td>
-        <td>
+        <td data-label="Actions">
           <div style="display:flex; gap:8px;">
             <button class="action-btn" title="Assign" onclick="openAssignModal('${issue.id}')"><i class="fas fa-user-plus"></i></button>
             <button class="action-btn" title="Performance Detail" onclick="showAlert('info', 'Analysis coming soon')"><i class="fas fa-chart-line"></i></button>
